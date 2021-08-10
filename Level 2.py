@@ -1,52 +1,90 @@
+from tkinter import *
+from random import randint
+from tkinter import ttk
+
 import random
-import math
 
-def play():
-    user = input("What's your choice? 'r' for rock, 'p' for paper, 's' for scissors\n")
-    user = user.lower()
+root = Tk()
+root.title('Rock, Paper, Scissors')
 
-    computer = random.choice(['r', 'p', 's'])
+root.geometry("300x300")
+# Change bg color to white
+root.config(bg="white")
 
-    if user == computer:
-        return (0, user, computer)
+# Define our images
+rock = Rock.jpg
+paper = Paper.jpg
+scissors = Scissors.jpg
 
-    # r > s, s > p, p > r
-    if is_win(user, computer):
-        return (1, user, computer)
+# Add Images to a list
+image_list = [rock, paper, scissors]
 
-    return (-1, user, computer)
+# Pick random number between 0 and 2
+pick_number = randint(0, 2)
 
-def is_win(player, opponent):
-    # return true is the player beats the opponent
-    # winning conditions: r > s, s > p, p > r
-    if (player == 'r' and opponent == 's') or (player == 's' and opponent == 'p') or (player == 'p' and opponent == 'r'):
-        return True
-    return False
-
-def play_best_of(n):
-    # play against the computer until someone wins best of n games
-    # to win, you must win ceil(n/2) games (ie 2/3, 3/5, 4/7)
-    player_wins = 0
-    computer_wins = 0
-    wins_necessary = math.ceil(n/2)
-    while player_wins < wins_necessary and computer_wins < wins_necessary:
-        result, user, computer = play()
-        # tie
-        if result == 0:
-            print('It is a tie. You and the computer have both chosen {}. \n'.format(user))
-        # you win
-        elif result == 1:
-            player_wins += 1
-            print('You chose {} and the computer chose {}. You won!\n'.format(user, computer))
-        else:
-            computer_wins += 1
-            print('You chose {} and the computer chose {}. You lost :(\n'.format(user, computer))
-
-    if player_wins > computer_wins:
-        print('You have won the best of {} games! What a champ :D'.format(n))
-    else:
-        print('Unfortunately, the computer has won the best of {} games. Better luck next time!'.format(n))
+# Throw up an image when the program starts
+image_label = Label(root, image=image_list[pick_number], bd=0)
+image_label.pack(pady=20)
 
 
-if __name__ == '__main__':
-    play_best_of(3) # 2
+# Create Spin Function
+def spin():
+	# Pick random numnber
+	pick_number = randint(0, 2)
+	# Show image
+	image_label.config(image=image_list[pick_number])
+
+	# 0 =  Rock
+	# 1 = Paper
+	# 2 = Scissors
+
+	# Convert Dropdown choice to a number
+	if user_choice.get() == "Rock":
+		user_choice_value = 0
+	elif user_choice.get() == "Paper":
+		user_choice_value = 1
+	elif user_choice.get() == "Scissors":
+		user_choice_value = 2
+
+	# Determine if we won or lost
+	if user_choice_value == 0:  # Rock
+		if pick_number == 0:
+			win_lose_label.config(text="It's A Tie! Spin Again...")
+		elif pick_number == 1:  # Paper
+			win_lose_label.config(text="Paper Cover Rock! You Lose...")
+		elif pick_number == 2:  # Scissors
+			win_lose_label.config(text="Rock Smashes Scissors!  You Win!!!")
+
+	# If USer Picks Paper
+	if user_choice_value == 1:  # Paper
+		if pick_number == 1:
+			win_lose_label.config(text="It's A Tie! Spin Again...")
+		elif pick_number == 0:  # Rock
+			win_lose_label.config(text="Paper Cover Rock! You Win!!!")
+		elif pick_number == 2:  # Scissors
+			win_lose_label.config(text="Scissors Cuts Paper! You Lose...")
+
+	# If User Pics Scissors
+	if user_choice_value == 2:  # Scissors
+		if pick_number == 2:
+			win_lose_label.config(text="It's A Tie! Spin Again...")
+		elif pick_number == 0:  # Rock
+			win_lose_label.config(text="Rock Smashes Scissors! You Lose...")
+		elif pick_number == 1:  # Paper
+			win_lose_label.config(text="Scissors Cuts Paper! You Win!!!")
+
+
+# Make our choice
+user_choice = ttk.Combobox(root, value=("Rock", "Paper", "Scissors"))
+user_choice.current(0)
+user_choice.pack(pady=20)
+
+# Create Spin Button
+spin_button = Button(root, text="Spin!", command=spin)
+spin_button.pack(pady=10)
+
+# Label for showing if you won or not
+win_lose_label = Label(root, text="", font=("Helvetica", 18), bg="white")
+win_lose_label.pack(pady=50)
+
+root.mainloop()
